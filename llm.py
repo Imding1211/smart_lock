@@ -52,7 +52,7 @@ def ask_fields(user_input, missing_fields):
         missing_fields = ','.join(missing_fields),
     )
 
-    # print(prompt)
+    print(prompt)
 
     resp = llm_model.invoke([("user", prompt)])
 
@@ -82,7 +82,7 @@ def evaluate_info_sufficiency(user_input, context):
 	    question = ','.join(user_input),
 	)
 
-	# print(prompt)
+	print(prompt)
 
 	resp = llm_model.invoke([("user", prompt)])
 

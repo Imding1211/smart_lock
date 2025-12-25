@@ -1,4 +1,5 @@
 
+from datetime import datetime
 from textwrap import dedent
 
 import pandas as pd
@@ -51,5 +52,48 @@ def build_docs_from_df(df_input):
         docs.append(doc)
 
     return docs
+
+#-----------------------------------------------------------------------------#
+
+def merge_last_field_unique(data):
+
+    time   = set()
+    seen   = set()
+    result_time = []
+    result      = []
+
+    for item in reversed(data):
+        timestamp = item[1]
+        msg       = item[5]
+
+        if msg not in seen and timestamp not in time:
+            time.add(timestamp)
+            seen.add(msg)
+            result_time.append(f"{time_ago(int(timestamp))}:{msg}")
+            result.append(msg)
+
+    return result_time, result
+
+#-----------------------------------------------------------------------------#
+
+def time_ago(timestamp, unit="ms"):
+
+    if unit == "ms":
+        timestamp /= 1000
+
+    dt = datetime.fromtimestamp(timestamp)
+    now = datetime.now()
+
+    seconds = int((now - dt).total_seconds())
+
+    if seconds < 60:
+        return f"{seconds}秒前"
+
+    minutes, seconds = divmod(seconds, 60)
+    if minutes < 60:
+        return f"{minutes}分{seconds}秒前"
+
+    hours, minutes = divmod(minutes, 60)
+    return f"{hours}小時{minutes}分前"
 
 #=============================================================================#

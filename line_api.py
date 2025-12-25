@@ -1,10 +1,10 @@
 
 from fields import get_fields
 from drive import get_doc_url
-from tool import get_qa_info
 from llm import ask_fields
 from graph import lock_ai
 from message_db import *
+from tool import *
 
 from linebot.exceptions import InvalidSignatureError
 from fastapi import FastAPI, Request, HTTPException
@@ -48,21 +48,6 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 #=============================================================================#
-
-def merge_last_field_unique(data):
-
-    seen   = set()
-    result = []
-
-    for item in reversed(data):
-        msg = item[-1]
-        if msg not in seen:
-            seen.add(msg)
-            result.append(msg)
-
-    return result
-
-#-----------------------------------------------------------------------------#
 
 def reply_line(event, messages):
 
@@ -130,9 +115,9 @@ def handle_text_message(event):
 
     records = fetch_recent_records(user_id)
 
-    user_input = merge_last_field_unique(records)
+    user_input_time, user_input = merge_last_field_unique(records)
 
-    fields, missing_fields, is_missing = get_fields(user_input, issues)
+    fields, missing_fields, is_missing = get_fields(user_input_time, issues)
 
     if is_missing:
         reply_message = ask_fields(user_input, missing_fields)
@@ -175,4 +160,4 @@ def handle_text_message(event):
 
     reply_line(event, messages)
 
-    delete_records_by_user_id(user_id)
+    # delete_records_by_user_id(user_id)
